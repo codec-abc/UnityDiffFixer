@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DiffFixerAlgorithm": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\c.viot\\Desktop\\old.unity C:\\Users\\c.viot\\Desktop\\new.unity"
+    }
+  }
+}

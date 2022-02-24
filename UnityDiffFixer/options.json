@@ -1,0 +1,10 @@
+{
+  "IsPrintingToConsole": true,
+  "WaitBeforeExit": false,
+  "ShouldSortByComponentID": true,
+  "ShouldTryToFixDiff": false,
+  "ShouldDoBackup": false,
+  "BackupDirectoryPath": "%USERPROFILE%\\Desktop\\diffBackup",
+  "DiffExePath": "%LocalAppData%\\Programs\\Microsoft VS Code\\Code.exe",
+  "DiffArguments": "--diff \"{0}\" \"{1}\""
+}

@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "UnityDiffFixerCommandLine": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\c.viot\\source\\repos\\UnityDiffFixer\\UnityDiffFixerWPF\\buggy_diff_old.yml C:\\Users\\c.viot\\source\\repos\\UnityDiffFixer\\UnityDiffFixerWPF\\buggy_diff_new.yml",
+      "workingDirectory": "C:\\Workplace\\Soft\\UnityDiffFixerCommandLine",
+      "remoteDebugEnabled": false
+    }
+  }
+}

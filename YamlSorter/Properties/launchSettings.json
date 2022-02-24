@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "YamlSorter": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\Users\\c.viot\\Desktop\\SorterTest\\new\\new.yml\" \"C:\\Users\\c.viot\\Desktop\\SorterTest\\new\\new_sorted.yml\""
+    }
+  }
+}
