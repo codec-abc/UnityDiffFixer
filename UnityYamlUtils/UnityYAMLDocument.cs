@@ -141,11 +141,24 @@ namespace UnityDiffFixer
                         break;
                     }
                     nextLine = parser.PeekCurrentLine();
-                } 
+                }
 
                 var stream = new YamlStream();
                 var bufferAsString = buffer.ToString();
-                stream.Load(new StringReader(bufferAsString));
+                var reader = new StringReader(bufferAsString); 
+
+                try
+                {
+                    stream.Load(reader);
+                }
+                catch (System.Exception e)
+                {
+                    var msg = "Cannot parse " + unityObj.GetOriginalLine().LineContent;
+                    msg += "\r\nWith Content:\r\n";
+                    msg += bufferAsString;
+                    throw new System.Exception(msg, e);
+                }
+
                 var queryBuilderVisitor = new YamlTerminalQueryBuilderVisitor();
                 stream.Accept(queryBuilderVisitor);
 

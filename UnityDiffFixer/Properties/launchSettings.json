@@ -2,7 +2,7 @@
   "profiles": {
     "UnityDiffFixerCommandLine": {
       "commandName": "Project",
-      "commandLineArgs": "C:\\Users\\c.viot\\source\\repos\\UnityDiffFixer\\UnityDiffFixerWPF\\buggy_diff_old.yml C:\\Users\\c.viot\\source\\repos\\UnityDiffFixer\\UnityDiffFixerWPF\\buggy_diff_new.yml",
+      "commandLineArgs": "C:\\Users\\c.viot\\source\\repos\\UnityDiffFixer\\bugDiffer\\diffFixerITE\\old.yaml C:\\Users\\c.viot\\source\\repos\\UnityDiffFixer\\bugDiffer\\diffFixerITE\\new.yaml",
       "workingDirectory": "C:\\Workplace\\Soft\\UnityDiffFixerCommandLine",
       "remoteDebugEnabled": false
     }
