@@ -82,21 +82,6 @@ namespace UnityDiffFixer
             return m_header.GetOriginalSource();
         }
 
-        public static List<string> GetAllLinesFromText(string content)
-        {
-            List<string> returned = new List<string>();
-            using (StringReader sr = new StringReader(content))
-            {
-                string line;
-                while ((line = sr.ReadLine()) != null)
-                {
-                    // do something
-                    returned.Add(line);
-                }
-            }
-            return returned;
-        }
-
         private void ParseHeader(UnityYAMLDocument document)
         {
             // TODO: add check about version

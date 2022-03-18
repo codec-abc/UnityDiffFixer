@@ -96,8 +96,8 @@ namespace UnityDiffFixerCommandLine
                     }
                 }
 
-                var oldLines = GetAllLinesFromText(before);
-                var newLines = GetAllLinesFromText(after);
+                var oldLines = StringUtils.GetAllLinesFromText(before);
+                var newLines = StringUtils.GetAllLinesFromText(after);
 
                 if (options.ShouldTryToFixDiff)
                 {
@@ -116,7 +116,7 @@ namespace UnityDiffFixerCommandLine
 
                     var fixedYaml = comparerAndFixer.GetFixedVersion(printAction);
 
-                    var FixedNbLines = GetAllLinesFromText(fixedYaml).Count;
+                    var FixedNbLines = StringUtils.GetAllLinesFromText(fixedYaml).Count;
 
                     if (newNbLines != FixedNbLines && options.IsPrintingToConsole)
                     {
@@ -131,7 +131,7 @@ namespace UnityDiffFixerCommandLine
                     if (options.ShouldSortByComponentID)
                     {
                         var sortedYaml = YamlSorter.SortAsPrevious(before, fixedYaml, printAction);
-                        var sortedNbLines = GetAllLinesFromText(sortedYaml).Count;
+                        var sortedNbLines = StringUtils.GetAllLinesFromText(sortedYaml).Count;
                         if (sortedNbLines != FixedNbLines && options.IsPrintingToConsole)
                         {
                             ShowPopup
@@ -152,8 +152,8 @@ namespace UnityDiffFixerCommandLine
                     if (options.ShouldSortByComponentID)
                     {
                         var fixedYaml = YamlSorter.SortAsPrevious(before, after, printAction);
-                        var sortedNbLines = GetAllLinesFromText(fixedYaml).Count;
-                        var nbLines = GetAllLinesFromText(after).Count;
+                        var sortedNbLines = StringUtils.GetAllLinesFromText(fixedYaml).Count;
+                        var nbLines = StringUtils.GetAllLinesFromText(after).Count;
                         if (sortedNbLines != nbLines && options.IsPrintingToConsole)
                         {
                             ShowPopup
@@ -276,18 +276,6 @@ namespace UnityDiffFixerCommandLine
             return "";
         }
 
-        public static List<string> GetAllLinesFromText(string content)
-        {
-            List<string> returned = new List<string>();
-            using (StringReader sr = new StringReader(content))
-            {
-                string line;
-                while ((line = sr.ReadLine()) != null)
-                {
-                    returned.Add(line);
-                }
-            }
-            return returned;
-        }
+        
     }
 }

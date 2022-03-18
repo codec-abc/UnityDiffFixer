@@ -128,12 +128,12 @@ namespace UnityDiffFixer
                 printAction("Numbers of reverted values " + m_nbReverted);
             }
 
-            return ReserializeNewDocWithFix();
+            return ReserializeNewDocWithFix(printAction);
         }
 
-        private string ReserializeNewDocWithFix()
+        private string ReserializeNewDocWithFix(Action<string> printAction = null)
         {
-            return YamlQueryUtils.ReserializeNewDocWithFix(m_newDoc);
+            return YamlQueryUtils.ReserializeNewDocWithFix(m_newDoc, printAction);
         }
 
         private void RevertValue(YamlQuery query, string oldValue, YamlStream newYamlStream)

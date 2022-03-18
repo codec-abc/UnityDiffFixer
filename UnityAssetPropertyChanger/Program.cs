@@ -35,7 +35,7 @@ namespace UnityAssetPropertyChanger
 
                     Console.WriteLine($"processing {file}");
 
-                    var lines = GetAllLinesFromText(content);
+                    var lines = StringUtils.GetAllLinesFromText(content);
                     var document = UnityYAMLDocument.ParseUnityYAMLdocument(lines);
 
                     var queriesByComponents = document.GetQueriesByComponent();
@@ -173,20 +173,6 @@ namespace UnityAssetPropertyChanger
             var colorNodeQueryChain = GetEndColorQueryChain();
             colorNodeQueryChain.Add(new YamlQueryByName(colorNodeQueryChain.Last(), "a"));
             return colorNodeQueryChain;
-        }
-
-        public static List<string> GetAllLinesFromText(string content)
-        {
-            List<string> returned = new List<string>();
-            using (StringReader sr = new StringReader(content))
-            {
-                string line;
-                while ((line = sr.ReadLine()) != null)
-                {
-                    returned.Add(line);
-                }
-            }
-            return returned;
         }
     }
 }

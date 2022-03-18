@@ -14,7 +14,7 @@ namespace UnityDiffFixerCommandLine
         {
             string content = File.ReadAllText(args[0]);
 
-            var lines = GetAllLinesFromText(content);
+            var lines = StringUtils.GetAllLinesFromText(content);
             var document = UnityYAMLDocument.ParseUnityYAMLdocument(lines);
 
             StringBuilder builder = new StringBuilder();
@@ -34,20 +34,6 @@ namespace UnityDiffFixerCommandLine
             var sorted = builder.ToString();
             File.WriteAllText(args[1], sorted);
             return 0;
-        }
-
-        public static List<string> GetAllLinesFromText(string content)
-        {
-            List<string> returned = new List<string>();
-            using (StringReader sr = new StringReader(content))
-            {
-                string line;
-                while ((line = sr.ReadLine()) != null)
-                {
-                    returned.Add(line);
-                }
-            }
-            return returned;
         }
     }
 }

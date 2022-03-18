@@ -2,7 +2,7 @@
   "IsPrintingToConsole": true,
   "WaitBeforeExit": false,
   "ShouldSortByComponentID": true,
-  "ShouldTryToFixDiff": false,
+  "ShouldTryToFixDiff": true,
   "ShouldDoBackup": false,
   "BackupDirectoryPath": "%USERPROFILE%\\Desktop\\diffBackup",
   "DiffExePath": "%LocalAppData%\\Programs\\Microsoft VS Code\\Code.exe",

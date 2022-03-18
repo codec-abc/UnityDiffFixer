@@ -132,11 +132,28 @@ namespace UnityDiffFixer
         }
     }
 
+    public static class StringUtils
+    {
+        public static List<string> GetAllLinesFromText(string content)
+        {
+            List<string> returned = new List<string>();
+            using (StringReader sr = new StringReader(content))
+            {
+                string line;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    returned.Add(line);
+                }
+            }
+            return returned;
+        }
+    }
+
     public class YamlSorter
     {
         public static string SortAscending(string content)
         {
-            var lines = GetAllLinesFromText(content);
+            var lines = StringUtils.GetAllLinesFromText(content);
             var document = UnityYAMLDocument.ParseUnityYAMLdocument(lines);
 
             StringBuilder builder = new StringBuilder();
@@ -159,10 +176,10 @@ namespace UnityDiffFixer
 
         public static string SortAsPrevious(string oldContent, string newContent, Action<string> printAction)
         {
-            var oldLines = GetAllLinesFromText(oldContent);
+            var oldLines = StringUtils.GetAllLinesFromText(oldContent);
             var oldDocument = UnityYAMLDocument.ParseUnityYAMLdocument(oldLines);
 
-            var newLines = GetAllLinesFromText(newContent);
+            var newLines = StringUtils.GetAllLinesFromText(newContent);
             var newDocument = UnityYAMLDocument.ParseUnityYAMLdocument(newLines);
 
             var streamByComponentDictOldDoc = oldDocument.GetYamlStreamByComponent();
@@ -244,18 +261,5 @@ namespace UnityDiffFixer
             return sorted;
         }
 
-        public static List<string> GetAllLinesFromText(string content)
-        {
-            List<string> returned = new List<string>();
-            using (StringReader sr = new StringReader(content))
-            {
-                string line;
-                while ((line = sr.ReadLine()) != null)
-                {
-                    returned.Add(line);
-                }
-            }
-            return returned;
-        }
     }
 }

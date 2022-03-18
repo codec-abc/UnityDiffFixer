@@ -30,20 +30,6 @@ namespace UnityDiffFixer
             InitializeComponent();
         }
 
-        public static List<string> GetAllLinesFromText(string content)
-        {
-            List<string> returned = new List<string>();
-            using (StringReader sr = new StringReader(content))
-            {
-                string line;
-                while ((line = sr.ReadLine()) != null)
-                {
-                    returned.Add(line);
-                }
-            }
-            return returned;
-        }
-
         public static Stream GenerateStreamFromString(string s)
         {
             var stream = new MemoryStream();
@@ -59,10 +45,10 @@ namespace UnityDiffFixer
             string before = Encoding.UTF8.GetString(UnityDiffFixerWPF.Properties.Resources.old_scene);
             string after = Encoding.UTF8.GetString(UnityDiffFixerWPF.Properties.Resources.new_scene);
 
-            var oldLines = GetAllLinesFromText(before);
+            var oldLines = StringUtils.GetAllLinesFromText(before);
             var oldDocument = UnityYAMLDocument.ParseUnityYAMLdocument(oldLines);
 
-            var newLines = GetAllLinesFromText(after);
+            var newLines = StringUtils.GetAllLinesFromText(after);
             var newDocument = UnityYAMLDocument.ParseUnityYAMLdocument(newLines);
 
             var comparerAndFixer = new UnityDiffComparerAndFixer(oldDocument, newDocument);

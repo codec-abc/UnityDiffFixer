@@ -144,7 +144,7 @@ namespace UnityDiffFixer
             }
         }
 
-        public static string ReserializeNewDocWithFix(UnityYAMLDocument doc)
+        public static string ReserializeNewDocWithFix(UnityYAMLDocument doc, Action<string> printAction = null)
         {
             StringBuilder builder = new StringBuilder();
             builder.Append(doc.GetOriginalHeader());
@@ -156,10 +156,46 @@ namespace UnityDiffFixer
                 var serializerVisitor = new YamlVisitorSerializer(source);
                 kvp.Value.Accept(serializerVisitor);
                 var str = serializerVisitor.GetContent();
-                builder.Append(str);
+
+                //var sourceLines = StringUtils.GetAllLinesFromText(source);
+                //var fixedLines = StringUtils.GetAllLinesFromText(str);
+                //var sourceLinesCount = sourceLines.Count;
+                //var fixedLinesCount = fixedLines.Count;
+
+                var sourceLinesCount = CountLinesFast(source);
+                var fixedLinesCount = CountLinesFast(str);
+
+                if (sourceLinesCount != fixedLinesCount)
+                {
+                    if (printAction != null)
+                    {
+                        printAction($"Fix for component : {kvp.Key.GetOriginalLine().LineContent} has modified line count. Reverting auto-fixes.");
+                    }
+                    builder.Append(source);
+                }
+                else
+                {
+                    builder.Append(str);
+                }
             }
 
             return builder.ToString();
+        }
+
+        private static int CountLinesFast(string inStr)
+        {
+            var count = 0;
+            foreach (var c in inStr.AsSpan())
+            {
+                if (c == '\n')
+                {
+                    count++;
+                }
+
+            }
+            return count;
+
+            //return inStr.Split('\n').Length;
         }
     }
 }

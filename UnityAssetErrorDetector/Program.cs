@@ -39,7 +39,7 @@ class Program
                     continue;
                 }
 
-                var lines = GetAllLinesFromText(content);
+                var lines = StringUtils.GetAllLinesFromText(content);
                 try 
                 {
                     //Console.WriteLine($"processing file {file}");
@@ -66,20 +66,6 @@ class Program
         Console.WriteLine("Done. Press enter to quit");
         Console.ReadLine();
         return 0;
-    }
-
-    public static List<string> GetAllLinesFromText(string content)
-    {
-        List<string> returned = new List<string>();
-        using (StringReader sr = new StringReader(content))
-        {
-            string line;
-            while ((line = sr.ReadLine()) != null)
-            {
-                returned.Add(line);
-            }
-        }
-        return returned;
     }
 
     public static class MyDirectory
