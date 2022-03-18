@@ -2,7 +2,7 @@
   "profiles": {
     "UnityDiffFixerCommandLine": {
       "commandName": "Project",
-      "commandLineArgs": "C:\\Users\\c.viot\\source\\repos\\UnityDiffFixer\\bugDiffer\\diffFixerITE\\old.yaml C:\\Users\\c.viot\\source\\repos\\UnityDiffFixer\\bugDiffer\\diffFixerITE\\new.yaml",
+      "commandLineArgs": "C:\\Users\\c.viot\\source\\repos\\UnityDiffFixer\\bugDiffer\\diffFixerITE\\duplicateFields\\old.yaml C:\\Users\\c.viot\\source\\repos\\UnityDiffFixer\\bugDiffer\\diffFixerITE\\duplicateFields\\new.yaml",
       "workingDirectory": "C:\\Workplace\\Soft\\UnityDiffFixerCommandLine",
       "remoteDebugEnabled": false
     }
