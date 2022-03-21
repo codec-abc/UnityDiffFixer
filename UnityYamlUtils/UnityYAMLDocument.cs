@@ -19,7 +19,7 @@ namespace UnityDiffFixer
         private Dictionary<UnityYAMLRootObject, string> m_textSourceByUnityComponent =
             new Dictionary<UnityYAMLRootObject, string>();
 
-        private Parser parser;
+        private Parser m_parser;
 
         private static readonly Regex objectHeaderRegex = 
             new Regex
@@ -65,7 +65,7 @@ namespace UnityDiffFixer
 
         public UnityYAMLDocument(Parser parser)
         {
-            this.parser = parser;
+            this.m_parser = parser;
         }
 
         public static UnityYAMLDocument ParseUnityYAMLdocument(List<string> lines)
@@ -88,10 +88,10 @@ namespace UnityDiffFixer
             UnityYAMLHeader.YAMLVersion yamlVersion;
             UnityYAMLHeader.TagVersion tagVersion;
             string headerSource = "";
-            var yamlVersionLine = parser.GetCurrentLineAndAdvance();
+            var yamlVersionLine = m_parser.GetCurrentLineAndAdvance();
             headerSource += yamlVersionLine.LineContent + LineEndings.NewLine;
             yamlVersion = new UnityYAMLHeader.YAMLVersion(yamlVersionLine.LineContent, yamlVersionLine.LineIndex);
-            var tagVersionLine = parser.GetCurrentLineAndAdvance();
+            var tagVersionLine = m_parser.GetCurrentLineAndAdvance();
             headerSource += tagVersionLine.LineContent + LineEndings.NewLine;
             tagVersion = new UnityYAMLHeader.TagVersion(tagVersionLine.LineContent, tagVersionLine.LineIndex);
             document.m_header = new UnityYAMLHeader(yamlVersion, tagVersion, headerSource);
@@ -99,9 +99,9 @@ namespace UnityDiffFixer
 
         private void ParseObjects(UnityYAMLDocument document)
         {
-            while (!parser.IsAtEnd()) 
+            while (!m_parser.IsAtEnd()) 
             {
-                var objectHeaderLine = parser.GetCurrentLineAndAdvance();
+                var objectHeaderLine = m_parser.GetCurrentLineAndAdvance();
                 var match = objectHeaderRegex.Match(objectHeaderLine.LineContent);
 
                 var objectClassValue = match.Groups[1].ToString();
@@ -115,17 +115,17 @@ namespace UnityDiffFixer
                 var unityObj = new UnityYAMLRootObject(unityClass, objectIdValue, objectHeaderLine);
 
                 var buffer = new StringBuilder();
-                var nextLine = parser.PeekCurrentLine();
+                var nextLine = m_parser.PeekCurrentLine();
 
-                while (!nextLine.StartsWith("--- !u") && !parser.IsAtEnd())
+                while (!nextLine.StartsWith("--- !u") && !m_parser.IsAtEnd())
                 {
-                    buffer.Append(parser.GetCurrentLineAndAdvance().LineContent);
+                    buffer.Append(m_parser.GetCurrentLineAndAdvance().LineContent);
                     buffer.Append(LineEndings.NewLine);
-                    if (parser.IsAtEnd())
+                    if (m_parser.IsAtEnd())
                     {
                         break;
                     }
-                    nextLine = parser.PeekCurrentLine();
+                    nextLine = m_parser.PeekCurrentLine();
                 }
 
                 var stream = new YamlStream();

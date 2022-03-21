@@ -2,7 +2,7 @@
   "profiles": {
     "UnityDiffFixerCommandLine": {
       "commandName": "Project",
-      "commandLineArgs": "C:\\Users\\c.viot\\source\\repos\\UnityDiffFixer\\bugDiffer\\differentLineCount\\old.yaml C:\\Users\\c.viot\\source\\repos\\UnityDiffFixer\\bugDiffer\\differentLineCount\\new.yaml",
+      "commandLineArgs": "C:\\Users\\c.viot\\source\\repos\\UnityDiffFixer\\bugDiffer\\uncommonString\\test.yaml C:\\Users\\c.viot\\source\\repos\\UnityDiffFixer\\bugDiffer\\uncommonString\\test1.yaml",
       "workingDirectory": "C:\\Workplace\\Soft\\UnityDiffFixerCommandLine",
       "remoteDebugEnabled": false
     }

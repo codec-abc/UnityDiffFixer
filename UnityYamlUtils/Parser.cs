@@ -9,7 +9,7 @@ namespace UnityDiffFixer
 
         public Parser(List<string> lines)
         {
-            this.m_lines = lines;
+            m_lines = lines;
         }
 
         internal IndexedLine GetCurrentLineAndAdvance()

@@ -42,13 +42,43 @@ namespace UnityDiffFixer
         public void Visit(YamlScalarNode scalar)
         {
             var length = TokenLength(scalar);
-            if (scalar.Start.Index != m_serializingIndex)
+            if (scalar.Start.Index != m_serializingIndex || scalar.Value.Length != length)
             {
                 var diff = scalar.Start.Index - m_serializingIndex;
                 buffer.Append(m_source.Substring(m_serializingIndex, diff));
                 m_serializingIndex += diff;
             }
+
+            switch (scalar.Style)
+            {
+                case YamlDotNet.Core.ScalarStyle.SingleQuoted:
+                    buffer.Append("'");
+                    break;
+                case YamlDotNet.Core.ScalarStyle.DoubleQuoted:
+                    buffer.Append("\"");
+                    break;
+                case YamlDotNet.Core.ScalarStyle.Plain:
+                    break;
+                default:
+                    throw new Exception("Not supported scalar style");
+            }
+
             buffer.Append(scalar.Value);
+
+            switch (scalar.Style)
+            {
+                case YamlDotNet.Core.ScalarStyle.SingleQuoted:
+                    buffer.Append("'");
+                    break;
+                case YamlDotNet.Core.ScalarStyle.DoubleQuoted:
+                    buffer.Append("\"");
+                    break;
+                case YamlDotNet.Core.ScalarStyle.Plain:
+                    break;
+                default:
+                    throw new Exception("Not supported scalar style");
+            }
+
             m_serializingIndex += length;
         }
 
