@@ -222,6 +222,8 @@ namespace UnityDiffFixerCommandLine
 
                         process.StartInfo.FileName = path;
                         process.StartInfo.Arguments = arguments;
+                        printAction($"Starting process {path} {arguments}");
+                        printAction("==============================");
                         process.Start();
                         process.WaitForExit();
                     }
