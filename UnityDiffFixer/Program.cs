@@ -9,69 +9,105 @@ using UnityDiffFixer;
 
 namespace UnityDiffFixerCommandLine
 {
-    class Program
+    public class Program
     {
+        private Options m_options;
+
+        [STAThread]
         static int Main(string[] args)
+        {
+            var program = new Program();
+            return program.Run(args);
+        }
+
+        private int Run(string[] args)
         {
             try
             {
-                var locationExe = System.Reflection.Assembly.GetEntryAssembly().Location;
-                var locationDirExe = Path.GetDirectoryName(locationExe);
-                Options options = null;// Options.GetDefault(locationDirExe);
-
-                var printAction = new Action<string>(a =>
+                m_options = GetOptions();
+                if (m_options == null)
                 {
-                    if (options.IsPrintingToConsole)
-                    {
-                        Console.WriteLine(a);
-                    }
-                });
-
-                try
-                {
-                    var jsonOptionsPath = Path.Combine(locationDirExe, "options.json");
-                    var bytes = File.ReadAllBytes(jsonOptionsPath);
-                    var utf8Reader = new Utf8JsonReader(bytes);
-                    options = JsonSerializer.Deserialize<Options>(ref utf8Reader);
+                    throw new Exception("Option parsing in invalid");
                 }
-                catch (Exception e)
-                {
-                    if (options.IsPrintingToConsole)
-                    {
-                        ShowPopup("Error " + e.ToString(), MsgType.Error, options);
-                    }
-                }
+            }
+            catch (Exception e)
+            {
+                ShowPopup("Internal error. Cannot get options: " + e.Message, MsgType.Error, null);
+                ReadLine();
+                return -1;
+            }
 
+            if (args.Length == 0)
+            {
+                return RunGUICase();
+            }
+            else
+            {
                 if (args.Length != 2)
                 {
-                    if (options.IsPrintingToConsole)
+                    if (m_options.IsPrintingToConsole)
                     {
-                        ShowPopup("incorrect number of parameters", MsgType.Error, options);
+                        ShowPopup("incorrect number of parameters", MsgType.Error, m_options);
                     }
-                    if (options.WaitBeforeExit)
+                    if (m_options.WaitBeforeExit)
                     {
                         ReadLine();
                     }
                     return -1;
                 }
 
-                if (options.IsPrintingToConsole)
+                return RunNormalCase(args[0], args[1]);
+            }
+        }
+
+        private int RunGUICase()
+        {
+            var gui = new GUIRunner(this);
+            gui.ShowDialog();
+            return gui.GetReturnCode(); ;
+        }
+
+        private static Options GetOptions()
+        {
+            var locationExe = System.Reflection.Assembly.GetEntryAssembly().Location;
+            var locationDirExe = Path.GetDirectoryName(locationExe);
+            Options options = null;
+            var jsonOptionsPath = Path.Combine(locationDirExe, "options.json");
+            var bytes = File.ReadAllBytes(jsonOptionsPath);
+            var utf8Reader = new Utf8JsonReader(bytes);
+            options = JsonSerializer.Deserialize<Options>(ref utf8Reader);
+            return options;
+        }
+
+        public int RunFromGUI(string oldFilePath, string newFilePath)
+        {
+            return RunNormalCase(oldFilePath, newFilePath);
+        }
+
+        private int RunNormalCase(string oldFilePathArg, string newFilePathArg)
+        {
+            try
+            {
+                var printAction = new Action<string>(a =>
                 {
-                    //ShowPopup(args[0] + " " + args[1], MsgType.Information);
-                }
+                    if (m_options.IsPrintingToConsole)
+                    {
+                        Console.WriteLine(a);
+                    }
+                });
 
-                string before = File.ReadAllText(args[0]);
-                string after = File.ReadAllText(args[1]);
+                string before = File.ReadAllText(oldFilePathArg);
+                string after = File.ReadAllText(newFilePathArg);
 
-                if (options.ShouldDoBackup)
+                if (m_options.ShouldDoBackup)
                 {
                     try
                     {
-                        var filename = Path.GetFileName(args[1]);
+                        var filename = Path.GetFileName(newFilePathArg);
                         var extension = Path.GetExtension(filename);
-                        var nameWithoutExtension = Path.GetFileNameWithoutExtension(args[1]);
+                        var nameWithoutExtension = Path.GetFileNameWithoutExtension(newFilePathArg);
                         var timestamp = DateTime.Now.ToString("yyyy-MM-dd--hh-mm-ss-fff");
-                        var backupDirPath = Environment.ExpandEnvironmentVariables(options.BackupDirectoryPath);
+                        var backupDirPath = Environment.ExpandEnvironmentVariables(m_options.BackupDirectoryPath);
                         Directory.CreateDirectory(backupDirPath);
 
                         var backupPath = Path.Combine
@@ -84,11 +120,11 @@ namespace UnityDiffFixerCommandLine
                     }
                     catch (Exception e)
                     {
-                        if (options.ShouldDoBackup && options.IsPrintingToConsole)
+                        if (m_options.ShouldDoBackup && m_options.IsPrintingToConsole)
                         {
-                            ShowPopup("Aborting because we cannot do backup: " + e.Message, MsgType.Error, options);
+                            ShowPopup("Aborting because we cannot do backup: " + e.Message, MsgType.Error, m_options);
                         }
-                        if (options.WaitBeforeExit)
+                        if (m_options.WaitBeforeExit)
                         {
                             ReadLine();
                         }
@@ -99,15 +135,15 @@ namespace UnityDiffFixerCommandLine
                 var oldLines = StringUtils.GetAllLinesFromText(before);
                 var newLines = StringUtils.GetAllLinesFromText(after);
 
-                if (options.ShouldTryToFixDiff)
+                if (m_options.ShouldTryToFixDiff)
                 {
                     var oldDocument = UnityYAMLDocument.ParseUnityYAMLdocument(oldLines);
                     var newDocument = UnityYAMLDocument.ParseUnityYAMLdocument(newLines);
 
-                    var diffOptions = 
+                    var diffOptions =
                         new DiffOptions
                         (
-                            options.IsPrintingToConsole
+                            m_options.IsPrintingToConsole
                         );
 
                     var comparerAndFixer = new UnityDiffComparerAndFixer(oldDocument, newDocument, diffOptions);
@@ -118,71 +154,71 @@ namespace UnityDiffFixerCommandLine
 
                     var FixedNbLines = StringUtils.GetAllLinesFromText(fixedYaml).Count;
 
-                    if (newNbLines != FixedNbLines && options.IsPrintingToConsole)
+                    if (newNbLines != FixedNbLines && m_options.IsPrintingToConsole)
                     {
                         ShowPopup
                         (
-                            $"ERROR !!! Fixing YAML changed lines count: original: {newNbLines}, fixed: {FixedNbLines}", 
-                            MsgType.Error, 
-                            options
+                            $"ERROR !!! Fixing YAML changed lines count: original: {newNbLines}, fixed: {FixedNbLines}",
+                            MsgType.Error,
+                            m_options
                         );
                     }
 
-                    if (options.ShouldSortByComponentID)
+                    if (m_options.ShouldSortByComponentID)
                     {
                         var sortedYaml = YamlSorter.SortAsPrevious(before, fixedYaml, printAction);
                         var sortedNbLines = StringUtils.GetAllLinesFromText(sortedYaml).Count;
-                        if (sortedNbLines != FixedNbLines && options.IsPrintingToConsole)
+                        if (sortedNbLines != FixedNbLines && m_options.IsPrintingToConsole)
                         {
                             ShowPopup
                             (
-                                $"ERROR !!! Sorting YAML changed lines count: fixed: {FixedNbLines}, sorted: {sortedNbLines}", 
-                                MsgType.Error, 
-                                options
+                                $"ERROR !!! Sorting YAML changed lines count: fixed: {FixedNbLines}, sorted: {sortedNbLines}",
+                                MsgType.Error,
+                                m_options
                             );
                         }
 
                         fixedYaml = sortedYaml;
                     }
 
-                    File.WriteAllText(args[1], fixedYaml);
+                    File.WriteAllText(newFilePathArg, fixedYaml);
                 }
                 else
                 {
-                    if (options.ShouldSortByComponentID)
+                    if (m_options.ShouldSortByComponentID)
                     {
                         var fixedYaml = YamlSorter.SortAsPrevious(before, after, printAction);
                         var sortedNbLines = StringUtils.GetAllLinesFromText(fixedYaml).Count;
                         var nbLines = StringUtils.GetAllLinesFromText(after).Count;
-                        if (sortedNbLines != nbLines && options.IsPrintingToConsole)
+                        if (sortedNbLines != nbLines && m_options.IsPrintingToConsole)
                         {
                             ShowPopup
                             (
-                                $"ERROR !!! Sorting YAML changed lines count: original: {nbLines}, sorted: {sortedNbLines}", 
+                                $"ERROR !!! Sorting YAML changed lines count: original: {nbLines}, sorted: {sortedNbLines}",
                                 MsgType.Error,
-                                options
+                                m_options
                             );
                         }
-                        File.WriteAllText(args[1], fixedYaml);
+                        File.WriteAllText(newFilePathArg, fixedYaml);
                     }
                     else
                     {
-                        File.WriteAllText(args[1], after);
+                        File.WriteAllText(newFilePathArg, after);
                     }
                 }
 
-                if (!string.IsNullOrWhiteSpace(options.DiffExePath))
+                if (!string.IsNullOrWhiteSpace(m_options.DiffExePath))
                 {
                     try
                     {
                         var process = new Process();
                         var arguments = "";
-                        if (!string.IsNullOrWhiteSpace(options.DiffArguments))
+                        if (!string.IsNullOrWhiteSpace(m_options.DiffArguments))
                         {
-                            arguments = string.Format(options.DiffArguments, args[0], args[1]);
+                            arguments = string.Format(m_options.DiffArguments, oldFilePathArg, newFilePathArg);
                         }
 
-                        var path = Environment.ExpandEnvironmentVariables(options.DiffExePath);
+                        var path = Environment.ExpandEnvironmentVariables(m_options.DiffExePath);
 
                         process.StartInfo.FileName = path;
                         process.StartInfo.Arguments = arguments;
@@ -191,29 +227,29 @@ namespace UnityDiffFixerCommandLine
                     }
                     catch (Exception e)
                     {
-                        if (options.IsPrintingToConsole)
+                        if (m_options.IsPrintingToConsole)
                         {
                             ShowPopup
                             (
-                                "Error when trying to launch exe: " + e.Message, 
+                                "Error when trying to launch exe: " + e.Message,
                                 MsgType.Error,
-                                options
+                                m_options
                             );
                         }
 
-                        if (options.WaitBeforeExit)
+                        if (m_options.WaitBeforeExit)
                         {
                             ReadLine();
                         }
                         return -1;
                     }
                 }
-                if (options.WaitBeforeExit)
+                if (m_options.WaitBeforeExit)
                 {
                     ReadLine();
                 }
                 return 0;
-            } 
+            }
             catch (Exception e)
             {
                 ShowPopup("Internal error: " + e.Message, MsgType.Error, null);
@@ -223,10 +259,13 @@ namespace UnityDiffFixerCommandLine
             }
         }
 
-        private static void ReadLine()
+        private void ReadLine()
         {
-            Console.WriteLine("Push Enter Key To Continue");
-            Console.ReadLine();
+            if (m_options != null && m_options.WaitBeforeExit)
+            {
+                Console.WriteLine("Push Enter Key To Continue");
+                Console.ReadLine();
+            }
         }
 
         public enum MsgType
@@ -275,7 +314,5 @@ namespace UnityDiffFixerCommandLine
 
             return "";
         }
-
-        
     }
 }
