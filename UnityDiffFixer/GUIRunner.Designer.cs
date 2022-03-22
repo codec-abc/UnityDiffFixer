@@ -83,19 +83,27 @@
             // 
             // textBox1
             // 
+            this.textBox1.AllowDrop = true;
             this.textBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBox1.Location = new System.Drawing.Point(64, 3);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(554, 23);
             this.textBox1.TabIndex = 2;
+            this.textBox1.DragDrop += new System.Windows.Forms.DragEventHandler(this.textBox1_DragDrop);
+            this.textBox1.DragEnter += new System.Windows.Forms.DragEventHandler(this.textBox1_DragEnter);
+            this.textBox1.DragOver += new System.Windows.Forms.DragEventHandler(this.textBox1_DragOver);
             // 
             // textBox2
             // 
+            this.textBox2.AllowDrop = true;
             this.textBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBox2.Location = new System.Drawing.Point(64, 31);
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(554, 23);
             this.textBox2.TabIndex = 3;
+            this.textBox2.DragDrop += new System.Windows.Forms.DragEventHandler(this.textBox2_DragDrop);
+            this.textBox2.DragEnter += new System.Windows.Forms.DragEventHandler(this.textBox2_DragEnter);
+            this.textBox2.DragOver += new System.Windows.Forms.DragEventHandler(this.textBox2_DragOver);
             // 
             // button1
             // 
