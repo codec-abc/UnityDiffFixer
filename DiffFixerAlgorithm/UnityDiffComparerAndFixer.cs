@@ -11,6 +11,8 @@ namespace UnityDiffFixer
 {
     public partial class UnityDiffComparerAndFixer
     {
+        private readonly string[] FORBIDDEN_NAMES = { "guid", "fileID" };
+
         private UnityYAMLDocument m_oldDoc;
         private UnityYAMLDocument m_newDoc;
         public DiffOptions DiffOptions { get; }
@@ -87,7 +89,9 @@ namespace UnityDiffFixer
                                     var oldValue = ((FixActionChangeValue)actionToDo).ValueToUse;
                                     m_nbReverted += 1;
 
-                                    if (DiffOptions.ShouldPrintToConsole)
+                                    var revertStatus = RevertValue(query, oldValue, newYamlStream);
+
+                                    if (DiffOptions.ShouldPrintToConsole && revertStatus == RevertStatus.Reverted)
                                     {
                                         var debug = "";
 
@@ -102,8 +106,6 @@ namespace UnityDiffFixer
                                             + " from " + newValue + " to " + oldValue
                                         );
                                     }
-
-                                    RevertValue(query, oldValue, newYamlStream);
                                     break;
 
                                 case FixActionType.None:
@@ -136,12 +138,43 @@ namespace UnityDiffFixer
             return YamlQueryUtils.ReserializeNewDocWithFix(m_newDoc, printAction);
         }
 
-        private void RevertValue(YamlQuery query, string oldValue, YamlStream newYamlStream)
+        public enum RevertStatus
+        {
+            Reverted,
+            ForbiddenElement
+        }
+
+        private RevertStatus RevertValue(YamlQuery query, string oldValue, YamlStream newYamlStream)
         {
             List<YamlQuery> queryList = YamlQueryUtils.GetQueryChainFromRootNode(query);
             var terminalNode = YamlQueryUtils.RunQueryChain(queryList, newYamlStream);
-            var realNode = (YamlScalarNode)terminalNode;
-            realNode.Value = oldValue;
+
+            var isForbiddenName = false;
+            var lastQueryElem = queryList.Last();
+            if (lastQueryElem is YamlQueryByName)
+            {
+                var name = (lastQueryElem as YamlQueryByName).Name;
+                foreach (var forbiddenName in FORBIDDEN_NAMES)
+                {
+                    if (forbiddenName == name)
+                    {
+                        isForbiddenName = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!isForbiddenName)
+            {
+                var realNode = (YamlScalarNode)terminalNode;
+                realNode.Value = oldValue;
+
+                return RevertStatus.Reverted;
+            } 
+            else
+            {
+                return RevertStatus.ForbiddenElement;
+            }
         }
 
     }
