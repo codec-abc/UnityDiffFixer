@@ -138,9 +138,9 @@ namespace UnityDiffFixer
                 }
                 catch (System.Exception e)
                 {
-                    var msg = "Cannot parse " + unityObj.GetOriginalLine().LineContent + "\r\n";
-                    msg += "Internal error: " + e.ToString() + "\r\n";
-                    msg += "\r\nWith Content:\r\n";
+                    var msg = "Cannot parse " + unityObj.GetOriginalLine().LineContent + "\n";
+                    msg += "Internal error: " + e.ToString() + "\n";
+                    msg += "\nWith Content:\n";
                     msg += bufferAsString;
                     throw new System.Exception(msg, e);
                 }

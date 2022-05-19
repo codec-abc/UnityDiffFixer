@@ -32,7 +32,6 @@ namespace UnityAssetPropertyChanger
                         continue;
                     }
 
-
                     Console.WriteLine($"processing {file}");
 
                     var lines = StringUtils.GetAllLinesFromText(content);

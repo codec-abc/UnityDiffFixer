@@ -2,6 +2,6 @@
 {
     public static class LineEndings
     {
-        public static readonly string NewLine = "\r\n";
+        public static readonly string NewLine = "\n";
     }
 }
