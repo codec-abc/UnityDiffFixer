@@ -6,7 +6,6 @@ namespace DiffFixerAlgorithm.FixHeuristics
     {
         bool INumberComparer.AreSame(double oldValue, double newValue)
         {
-
             var diff = Math.Abs(oldValue - newValue);
 
             if (diff < 0.0001)
