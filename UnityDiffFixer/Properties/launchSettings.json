@@ -2,6 +2,7 @@
   "profiles": {
     "UnityDiffFixerCommandLine": {
       "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\c.viot\\source\\repos\\UnityDiffFixer\\bugDiffer\\bitfields\\old.yml C:\\Users\\c.viot\\source\\repos\\UnityDiffFixer\\bugDiffer\\bitfields\\new.yml",
       "workingDirectory": "C:\\Workplace\\Soft\\UnityDiffFixerCommandLine",
       "remoteDebugEnabled": false
     }

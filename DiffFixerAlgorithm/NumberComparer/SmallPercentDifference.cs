@@ -12,7 +12,7 @@ namespace DiffFixerAlgorithm.FixHeuristics
             var newDiff = Math.Abs(diff / newValue);
 
             var oldValueFloor = Math.Floor(oldValue);
-            var newValueFloor = Math.Floor(oldValue);
+            var newValueFloor = Math.Floor(newValue);
 
             bool areBothInteger = 
                 oldValue - oldValueFloor == 0.0 &&
