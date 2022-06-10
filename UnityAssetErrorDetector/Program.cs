@@ -43,7 +43,7 @@ class Program
                 try 
                 {
                     //Console.WriteLine($"processing file {file}");
-                    var _ = UnityYAMLDocument.ParseUnityYAMLdocument(lines);
+                    var _ = UnityYAMLDocument.ParseUnityYAMLdocument(lines, null);
                 } 
                 catch (Exception e)
                 {

@@ -15,7 +15,7 @@ namespace UnityDiffFixerCommandLine
             string content = File.ReadAllText(args[0]);
 
             var lines = StringUtils.GetAllLinesFromText(content);
-            var document = UnityYAMLDocument.ParseUnityYAMLdocument(lines);
+            var document = UnityYAMLDocument.ParseUnityYAMLdocument(lines, null);
 
             StringBuilder builder = new StringBuilder();
             builder.Append(document.GetOriginalHeader());

@@ -46,10 +46,10 @@ namespace UnityDiffFixer
             string after = Encoding.UTF8.GetString(UnityDiffFixerWPF.Properties.Resources.new_scene);
 
             var oldLines = StringUtils.GetAllLinesFromText(before);
-            var oldDocument = UnityYAMLDocument.ParseUnityYAMLdocument(oldLines);
+            var oldDocument = UnityYAMLDocument.ParseUnityYAMLdocument(oldLines, null);
 
             var newLines = StringUtils.GetAllLinesFromText(after);
-            var newDocument = UnityYAMLDocument.ParseUnityYAMLdocument(newLines);
+            var newDocument = UnityYAMLDocument.ParseUnityYAMLdocument(newLines, null);
 
             var comparerAndFixer = new UnityDiffComparerAndFixer(oldDocument, newDocument);
             var fixedYaml = comparerAndFixer.GetFixedVersion(a => Console.WriteLine(a));

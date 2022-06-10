@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using YamlDotNet.RepresentationModel;
@@ -8,25 +9,31 @@ namespace UnityDiffFixer
 {
     public class UnityYAMLDocument
     {
-        UnityYAMLHeader m_header;
-
-        private Dictionary<UnityYAMLRootObject, List<YamlQuery>> m_terminalQueriesByUnityComponents = 
+        private readonly Dictionary<UnityYAMLRootObject, List<YamlQuery>> m_terminalQueriesByUnityComponents =
             new Dictionary<UnityYAMLRootObject, List<YamlQuery>>();
 
-        private Dictionary<UnityYAMLRootObject, YamlStream> m_yamlStreamByUnityComponent =
+        private readonly Dictionary<UnityYAMLRootObject, YamlStream> m_yamlStreamByUnityComponent =
             new Dictionary<UnityYAMLRootObject, YamlStream>();
 
-        private Dictionary<UnityYAMLRootObject, string> m_textSourceByUnityComponent =
+        private readonly Dictionary<UnityYAMLRootObject, string> m_textSourceByUnityComponent =
             new Dictionary<UnityYAMLRootObject, string>();
 
-        private Parser m_parser;
+        private readonly Parser m_parser;
 
-        private static readonly Regex objectHeaderRegex = 
+        private UnityYAMLHeader m_header;
+
+        private string m_guid;
+
+        private static readonly Regex s_objectHeaderRegex =
             new Regex
             (
-                @"^--- !u!([0-9]*) &(.*)$", 
-                RegexOptions.Compiled | RegexOptions.IgnoreCase
-            );
+                @"^--- !u!([0-9]*) &(.*)$",
+                RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+        public string GetGUID()
+        {
+            return m_guid;
+        }
 
         public Dictionary<UnityYAMLRootObject, List<YamlQuery>> GetQueriesByComponent()
         {
@@ -48,6 +55,26 @@ namespace UnityDiffFixer
             return m_terminalQueriesByUnityComponents[key];
         }
 
+        public void RemoveComponentWithId(string id)
+        {
+            var toRemoves = new List<UnityYAMLRootObject>();
+
+            foreach (var kvp in m_terminalQueriesByUnityComponents)
+            {
+                if (kvp.Key.GetId() == id)
+                {
+                    toRemoves.Add(kvp.Key);
+                }
+            }
+
+            foreach (var toRemove in toRemoves)
+            {
+                m_terminalQueriesByUnityComponents.Remove(toRemove);
+                m_yamlStreamByUnityComponent.Remove(toRemove);
+                m_textSourceByUnityComponent.Remove(toRemove);
+            }
+        }
+
         public YamlStream GetYamlStreamForComponent(UnityYAMLRootObject key)
         {
             return m_yamlStreamByUnityComponent[key];
@@ -63,17 +90,18 @@ namespace UnityDiffFixer
             return m_yamlStreamByUnityComponent.ContainsKey(key);
         }
 
-        public UnityYAMLDocument(Parser parser)
+        private UnityYAMLDocument(Parser parser, string fileGUID)
         {
             this.m_parser = parser;
+            this.m_guid = fileGUID;
         }
 
-        public static UnityYAMLDocument ParseUnityYAMLdocument(List<string> lines)
+        public static UnityYAMLDocument ParseUnityYAMLdocument(List<string> lines, string fileGUID)
         {
             Parser parser = new Parser(lines);
-            var document = new UnityYAMLDocument(parser);
+            var document = new UnityYAMLDocument(parser, fileGUID);
             document.ParseHeader(document);
-            document.ParseObjects(document);
+            document.ParseObjects(document, fileGUID);
             return document;
         }
 
@@ -97,22 +125,21 @@ namespace UnityDiffFixer
             document.m_header = new UnityYAMLHeader(yamlVersion, tagVersion, headerSource);
         }
 
-        private void ParseObjects(UnityYAMLDocument document)
+        private void ParseObjects(UnityYAMLDocument document, string fileGUID)
         {
-            while (!m_parser.IsAtEnd()) 
+            while (!m_parser.IsAtEnd())
             {
                 var objectHeaderLine = m_parser.GetCurrentLineAndAdvance();
-                var match = objectHeaderRegex.Match(objectHeaderLine.LineContent);
+                var match = s_objectHeaderRegex.Match(objectHeaderLine.LineContent);
 
                 var objectClassValue = match.Groups[1].ToString();
                 long objectClass = long.Parse(objectClassValue);
                 var objectIdValue = match.Groups[2].ToString();
-                //long objectId = long.Parse(objectIdValue);
 
+                // long objectId = long.Parse(objectIdValue);
                 var unityClass = UnityClassObjectUtils.LongToUnityClassObject(objectClass);
 
-                // TODO: use this
-                var unityObj = new UnityYAMLRootObject(unityClass, objectIdValue, objectHeaderLine);
+                var unityObj = new UnityYAMLRootObject(unityClass, objectIdValue, objectHeaderLine, fileGUID);
 
                 var buffer = new StringBuilder();
                 var nextLine = m_parser.PeekCurrentLine();
@@ -130,7 +157,7 @@ namespace UnityDiffFixer
 
                 var stream = new YamlStream();
                 var bufferAsString = buffer.ToString();
-                var reader = new StringReader(bufferAsString); 
+                var reader = new StringReader(bufferAsString);
 
                 try
                 {
@@ -153,9 +180,12 @@ namespace UnityDiffFixer
                 m_terminalQueriesByUnityComponents.Add(unityObj, queries);
                 m_yamlStreamByUnityComponent.Add(unityObj, stream);
                 m_textSourceByUnityComponent.Add(unityObj, bufferAsString);
+
+                unityObj.SetTerminalQueriesByUnityComponents(queries);
+                unityObj.SetYamlStream(stream);
+                unityObj.SetSource(bufferAsString);
+                unityObj.SetDocument(document);
             }
         }
     }
-
-    
 }

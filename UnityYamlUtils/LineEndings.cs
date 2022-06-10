@@ -1,4 +1,4 @@
-﻿namespace UnityDiffFixer
+namespace UnityDiffFixer
 {
     public static class LineEndings
     {

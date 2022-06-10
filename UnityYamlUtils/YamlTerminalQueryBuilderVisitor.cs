@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using YamlDotNet.RepresentationModel;
 
@@ -36,13 +36,13 @@ namespace UnityDiffFixer
 
         public void Visit(YamlScalarNode scalar)
         {
-            //var val = scalar.Value;
+            // var val = scalar.Value;
         }
 
         public void Visit(YamlSequenceNode sequence)
         {
             int i = 0;
-            foreach(var node in sequence.Children)
+            foreach (var node in sequence.Children)
             {
                 var currentQuery = m_currentQuery.Peek();
                 var nextQuery = new YamlQueryByIndex(currentQuery, i);
@@ -59,7 +59,7 @@ namespace UnityDiffFixer
                 }
 
                 m_currentQuery.Pop();
-                
+
                 i++;
             }
         }
@@ -71,11 +71,11 @@ namespace UnityDiffFixer
             {
                 YamlNode key = kvp.Key;
                 YamlNode val = kvp.Value;
-                
+
                 if (key.NodeType != YamlNodeType.Scalar)
                 {
                     throw new Exception("Yaml mapping key node is not a scalar type");
-                } 
+                }
                 else
                 {
                     var currentQuery = m_currentQuery.Peek();

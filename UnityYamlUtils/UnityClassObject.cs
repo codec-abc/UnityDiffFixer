@@ -1,4 +1,4 @@
-﻿namespace UnityDiffFixer
+namespace UnityDiffFixer
 {
     public enum UnityClassObject
     {
@@ -663,13 +663,14 @@
                 case 2089858483: return UnityClassObject.ScriptedImporter;
 
                 default: return UnityClassObject.UNKNOWN;
-                    //throw new System.Exception("Not supported value for unity class object: " + val);
+
+                    // throw new System.Exception("Not supported value for unity class object: " + val);
             }
         }
 
         public static long UnityClassObjectToLong(UnityClassObject val)
         {
-            switch(val)
+            switch (val)
             {
                 case UnityClassObject.UNKNOWN: return -1;
                 case UnityClassObject.Object: return 0;

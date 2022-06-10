@@ -137,8 +137,8 @@ namespace UnityDiffFixerCommandLine
 
                 if (m_options.ShouldTryToFixDiff)
                 {
-                    var oldDocument = UnityYAMLDocument.ParseUnityYAMLdocument(oldLines);
-                    var newDocument = UnityYAMLDocument.ParseUnityYAMLdocument(newLines);
+                    var oldDocument = UnityYAMLDocument.ParseUnityYAMLdocument(oldLines, null);
+                    var newDocument = UnityYAMLDocument.ParseUnityYAMLdocument(newLines, null);
 
                     var diffOptions =
                         new DiffOptions

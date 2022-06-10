@@ -1,8 +1,7 @@
-﻿namespace DiffFixerAlgorithm
+namespace DiffFixerAlgorithm
 {
     public class DiffOptions
     {
-
         public DiffOptions(bool printToConsole)
         {
             this.ShouldPrintToConsole = printToConsole;

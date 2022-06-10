@@ -35,7 +35,7 @@ namespace UnityAssetPropertyChanger
                     Console.WriteLine($"processing {file}");
 
                     var lines = StringUtils.GetAllLinesFromText(content);
-                    var document = UnityYAMLDocument.ParseUnityYAMLdocument(lines);
+                    var document = UnityYAMLDocument.ParseUnityYAMLdocument(lines, null);
 
                     var queriesByComponents = document.GetQueriesByComponent();
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using YamlDotNet.RepresentationModel;
@@ -9,12 +9,13 @@ namespace UnityDiffFixer
     {
         Dummy,
         ByName,
-        ByIndex
+        ByIndex,
     }
 
     public abstract class YamlQuery
     {
         public YamlQueryType QueryType { get; private set; }
+
         public YamlQuery Parent { get; private set; }
 
         public YamlQuery(YamlQuery parent, YamlQueryType queryType)
@@ -80,7 +81,7 @@ namespace UnityDiffFixer
     {
         public static YamlNode RunQueryChain(List<YamlQuery> queryList, YamlStream yamlStream)
         {
-            //List<YamlQuery> queryList = GetQueryChainFromRootNode(terminalQuery);
+            // List<YamlQuery> queryList = GetQueryChainFromRootNode(terminalQuery);
             var currentNode = yamlStream.Documents[0].RootNode;
 
             foreach (var query in queryList)
@@ -157,11 +158,10 @@ namespace UnityDiffFixer
                 kvp.Value.Accept(serializerVisitor);
                 var str = serializerVisitor.GetContent();
 
-                //var sourceLines = StringUtils.GetAllLinesFromText(source);
-                //var fixedLines = StringUtils.GetAllLinesFromText(str);
-                //var sourceLinesCount = sourceLines.Count;
-                //var fixedLinesCount = fixedLines.Count;
-
+                // var sourceLines = StringUtils.GetAllLinesFromText(source);
+                // var fixedLines = StringUtils.GetAllLinesFromText(str);
+                // var sourceLinesCount = sourceLines.Count;
+                // var fixedLinesCount = fixedLines.Count;
                 var sourceLinesCount = CountLinesFast(source);
                 var fixedLinesCount = CountLinesFast(str);
 
@@ -185,17 +185,15 @@ namespace UnityDiffFixer
         private static int CountLinesFast(string inStr)
         {
             var count = 0;
-            foreach (var c in inStr.AsSpan())
+
+            foreach (char c in inStr)
             {
                 if (c == '\n')
                 {
                     count++;
                 }
-
             }
             return count;
-
-            //return inStr.Split('\n').Length;
         }
     }
 }
