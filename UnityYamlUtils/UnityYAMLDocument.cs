@@ -50,6 +50,29 @@ namespace UnityDiffFixer
             return m_textSourceByUnityComponent;
         }
 
+        public IEnumerator<UnityYAMLRootObject> GetUnityComponents()
+        {
+            foreach (var elem in m_yamlStreamByUnityComponent)
+            {
+                yield return elem.Key;
+            }
+            yield break;
+        }
+
+        public UnityYAMLRootObject FindUnityCompByLocalId(string id)
+        {
+            foreach (var kvp in m_yamlStreamByUnityComponent)
+            {
+                var comp = kvp.Key;
+                if (comp.GetId() == id)
+                {
+                    return comp;
+                }
+            }
+
+            return null;
+        }
+
         public List<YamlQuery> GetYamlQueriesForComponent(UnityYAMLRootObject key)
         {
             return m_terminalQueriesByUnityComponents[key];

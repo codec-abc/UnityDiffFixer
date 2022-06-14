@@ -131,6 +131,11 @@ namespace UnityDiffFixer
         {
             m_document = document;
         }
+
+        internal YamlNode RunQuery(List<YamlQuery> queryChain)
+        {
+            return YamlQueryUtils.RunQueryChain(queryChain, GetYamlStream());
+        }
     }
 
     public enum PropType

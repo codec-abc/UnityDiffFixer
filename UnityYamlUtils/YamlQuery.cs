@@ -77,6 +77,38 @@ namespace UnityDiffFixer
         }
     }
 
+    public class YamlQueryBuilder
+    {
+        private readonly List<YamlQuery> m_yamlQueries = new List<YamlQuery>();
+        private YamlQuery m_currentQuery;
+
+        public YamlQueryBuilder()
+        {
+            m_currentQuery = new YamlDummyQuery();
+            m_yamlQueries.Add(m_currentQuery);
+        }
+
+        public YamlQueryBuilder WithName(string name)
+        {
+            m_currentQuery = new YamlQueryByName(m_currentQuery, name);
+            m_yamlQueries.Add(m_currentQuery);
+            return this;
+        }
+
+        public YamlQueryBuilder WithIndex(int index)
+        {
+            m_currentQuery = new YamlQueryByIndex(m_currentQuery, index);
+            m_yamlQueries.Add(m_currentQuery);
+            return this;
+        }
+
+        public IReadOnlyList<YamlQuery> Build()
+        {
+            var returned = new List<YamlQuery>(m_yamlQueries);
+            return returned;
+        }
+    }
+
     public class YamlQueryUtils
     {
         public static YamlNode RunQueryChain(List<YamlQuery> queryList, YamlStream yamlStream)
