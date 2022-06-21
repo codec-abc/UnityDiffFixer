@@ -330,7 +330,7 @@ namespace UnityDiffFixer
         ScriptedImporter,
     }
 
-    class UnityClassObjectUtils
+    internal class UnityClassObjectUtils
     {
         public static UnityClassObject LongToUnityClassObject(long val)
         {

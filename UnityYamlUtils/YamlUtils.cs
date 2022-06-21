@@ -5,7 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using YamlDotNet.Core;
+using YamlDotNet.Core.Events;
 using YamlDotNet.RepresentationModel;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.EventEmitters;
 
 namespace UnityDiffFixer
 {
@@ -132,9 +136,34 @@ namespace UnityDiffFixer
             m_document = document;
         }
 
-        internal YamlNode RunQuery(List<YamlQuery> queryChain)
+        internal YamlNode RunQuery(IEnumerable<YamlQuery> queryChain)
         {
             return YamlQueryUtils.RunQueryChain(queryChain, GetYamlStream());
+        }
+
+        internal YamlNode RunQuery(YamlQueryBuilder builder)
+        {
+            return YamlQueryUtils.RunQueryChain(builder.Build(), GetYamlStream());
+        }
+
+        internal string GetQueryValue(IEnumerable<YamlQuery> queryChain)
+        {
+            var result = YamlQueryUtils.RunQueryChain(queryChain, GetYamlStream());
+            if (result == null)
+            {
+                return null;
+            }
+            return (string)result;
+        }
+
+        internal string GetQueryValue(YamlQueryBuilder builder)
+        {
+            var result = YamlQueryUtils.RunQueryChain(builder.Build(), GetYamlStream());
+            if (result == null)
+            {
+                return null;
+            }
+            return (string)result;
         }
     }
 
@@ -166,6 +195,10 @@ namespace UnityDiffFixer
         private readonly TagVersion m_tagVersion;
         private readonly string m_source;
 
+        public YAMLVersion Version => m_version;
+
+        public TagVersion TagVersion1 => m_tagVersion;
+
         public class YAMLVersion
         {
             private readonly int m_lineIndex;
@@ -176,6 +209,10 @@ namespace UnityDiffFixer
                 this.m_version = yamlVersionLine;
                 this.m_lineIndex = lineIndex;
             }
+
+            public int LineIndex => m_lineIndex;
+
+            public string Version => m_version;
         }
 
         public string GetOriginalSource()
@@ -193,6 +230,10 @@ namespace UnityDiffFixer
                 this.m_tagValue = tagVersionLine;
                 this.m_lineIndex = lineIndex;
             }
+
+            public int LineIndex => m_lineIndex;
+
+            public string TagValue => m_tagValue;
         }
 
         public UnityYAMLHeader(YAMLVersion version, TagVersion tagVersion, string source)
@@ -337,6 +378,60 @@ namespace UnityDiffFixer
             return ToExpando(obj.GetSource());
         }
 
+        public static string SerializeExpandoObj(ExpandoObject obj)
+        {
+            var serializer =
+               new SerializerBuilder()
+               .WithEventEmitter(next => new FlowEverythingEmitter(next))
+               .Build();
+
+            var toSerialize = YamlUtils.ExpandoToDictionary(obj);
+            var newContent = serializer.Serialize(toSerialize);
+            return newContent;
+        }
+
+        public class FlowEverythingEmitter : ChainedEventEmitter
+        {
+            private int m_depth = 0;
+
+            public FlowEverythingEmitter(IEventEmitter nextEmitter) : base(nextEmitter)
+            {
+            }
+
+            public override void Emit(MappingStartEventInfo eventInfo, IEmitter emitter)
+            {
+                if (m_depth > 1)
+                {
+                    eventInfo.Style = MappingStyle.Flow;
+                }
+                else
+                {
+                    eventInfo.Style = MappingStyle.Block;
+                }
+                m_depth++;
+                base.Emit(eventInfo, emitter);
+            }
+
+            public override void Emit(MappingEndEventInfo eventInfo, IEmitter emitter)
+            {
+                m_depth--;
+                base.Emit(eventInfo, emitter);
+            }
+
+            public override void Emit(SequenceStartEventInfo eventInfo, IEmitter emitter)
+            {
+                m_depth++;
+                eventInfo.Style = SequenceStyle.Block;
+                nextEmitter.Emit(eventInfo, emitter);
+            }
+
+            public override void Emit(SequenceEndEventInfo eventInfo, IEmitter emitter)
+            {
+                m_depth--;
+                nextEmitter.Emit(eventInfo, emitter);
+            }
+        }
+
         public static Dictionary<string, object> ExpandoToDictionary(ExpandoObject obj)
         {
             var returned = new Dictionary<string, object>();
@@ -391,7 +486,7 @@ namespace UnityDiffFixer
             return exp;
         }
 
-        static object ToExpandoImpl(ExpandoObject parent, YamlNode node)
+        private static object ToExpandoImpl(ExpandoObject parent, YamlNode node)
         {
             if (node is YamlScalarNode scalar)
             {

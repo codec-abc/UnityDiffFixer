@@ -4,7 +4,7 @@ using YamlDotNet.RepresentationModel;
 
 namespace UnityDiffFixer
 {
-    class YamlTerminalQueryBuilderVisitor : IYamlVisitor
+    internal class YamlTerminalQueryBuilderVisitor : IYamlVisitor
     {
         private List<YamlQuery> m_terminalQueries = new List<YamlQuery>();
         private Stack<YamlQuery> m_currentQuery = new Stack<YamlQuery>();

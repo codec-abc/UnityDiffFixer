@@ -140,5 +140,15 @@ namespace UnityDiffFixer
                 e.Effect = DragDropEffects.None;
             }
         }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            m_oldFilePath = textBox1.Text;
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            m_newFilePath = textBox2.Text;
+        }
     }
 }

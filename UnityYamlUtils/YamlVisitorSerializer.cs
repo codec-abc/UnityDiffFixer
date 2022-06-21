@@ -7,7 +7,7 @@ namespace UnityDiffFixer
 {
     public class YamlVisitorSerializer : IYamlVisitor
     {
-        private StringBuilder buffer = new StringBuilder();
+        private StringBuilder m_buffer = new StringBuilder();
         private string m_source;
         private int m_serializingIndex = 0;
 
@@ -30,7 +30,7 @@ namespace UnityDiffFixer
             stream.Documents[0].Accept(this);
 
             var diff = m_source.Length - m_serializingIndex;
-            buffer.Append(m_source.Substring(m_serializingIndex, diff));
+            m_buffer.Append(m_source.Substring(m_serializingIndex, diff));
             m_serializingIndex += diff;
         }
 
@@ -45,17 +45,17 @@ namespace UnityDiffFixer
             if (scalar.Start.Index != m_serializingIndex || scalar.Value.Length != length)
             {
                 var diff = scalar.Start.Index - m_serializingIndex;
-                buffer.Append(m_source.Substring(m_serializingIndex, diff));
+                m_buffer.Append(m_source.Substring(m_serializingIndex, diff));
                 m_serializingIndex += diff;
             }
 
             switch (scalar.Style)
             {
                 case YamlDotNet.Core.ScalarStyle.SingleQuoted:
-                    buffer.Append("'");
+                    m_buffer.Append("'");
                     break;
                 case YamlDotNet.Core.ScalarStyle.DoubleQuoted:
-                    buffer.Append("\"");
+                    m_buffer.Append("\"");
                     break;
                 case YamlDotNet.Core.ScalarStyle.Plain:
                     break;
@@ -63,15 +63,15 @@ namespace UnityDiffFixer
                     throw new Exception("Not supported scalar style");
             }
 
-            buffer.Append(scalar.Value);
+            m_buffer.Append(scalar.Value);
 
             switch (scalar.Style)
             {
                 case YamlDotNet.Core.ScalarStyle.SingleQuoted:
-                    buffer.Append("'");
+                    m_buffer.Append("'");
                     break;
                 case YamlDotNet.Core.ScalarStyle.DoubleQuoted:
-                    buffer.Append("\"");
+                    m_buffer.Append("\"");
                     break;
                 case YamlDotNet.Core.ScalarStyle.Plain:
                     break;
@@ -105,7 +105,7 @@ namespace UnityDiffFixer
 
         public string GetContent()
         {
-            return buffer.ToString();
+            return m_buffer.ToString();
         }
     }
 }

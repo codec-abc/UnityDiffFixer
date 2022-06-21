@@ -111,7 +111,7 @@ namespace UnityDiffFixer
 
     public class YamlQueryUtils
     {
-        public static YamlNode RunQueryChain(List<YamlQuery> queryList, YamlStream yamlStream)
+        public static YamlNode RunQueryChain(IEnumerable<YamlQuery> queryList, YamlStream yamlStream)
         {
             // List<YamlQuery> queryList = GetQueryChainFromRootNode(terminalQuery);
             var currentNode = yamlStream.Documents[0].RootNode;
