@@ -5,6 +5,7 @@
   "ShouldTryToFixDiff": true,
   "ShouldDoBackup": false,
   "BackupDirectoryPath": "%USERPROFILE%\\Desktop\\diffBackup",
+  "OriginalDiffExePath": "%LocalAppData%\\Programs\\Microsoft VS Code\\Code.exe",
   "DiffExePath": "%LocalAppData%\\Programs\\Microsoft VS Code\\Code.exe",
   "DiffArguments": "--diff \"{0}\" \"{1}\""
 }
